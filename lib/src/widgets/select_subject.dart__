@@ -1,0 +1,68 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:schedule/providers/data_provider.dart';
+import 'package:schedule/src/views/subject_editor.dart';
+
+class SelectSubject extends StatelessWidget{
+  
+  const SelectSubject({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final _subjects = Provider.of<DataProvider>(context).subjects;
+
+    return Column(
+      // mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.add),
+          title: const Text("Add new subject"),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => SubjectEditor(),
+              fullscreenDialog: true,
+            ),
+          ),
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: _subjects.length,
+          itemBuilder: (_, int index) {
+            final subject = _subjects[index];
+            return ListTile(
+              onTap: () {
+                print("Selected subject ${_subjects[index].toString()}");
+                Navigator.of(context).pop();
+              },
+              leading: Icon(
+                Icons.circle,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              title: Text(subject.label),
+              trailing: PopupMenuButton(
+                padding: EdgeInsets.zero,
+                onSelected: (routeName) {
+                  Navigator.of(context).pushNamed(
+                    routeName as String,
+                    arguments: subject,
+                  );
+                },
+                itemBuilder: (context) {
+                  return [
+                    const PopupMenuItem(
+                      child: Text("Open"),
+                    ),
+                    const PopupMenuItem(
+                      child: Text("Edit"),
+                      value: SubjectEditor.routeName,
+                    ),
+                  ];
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}

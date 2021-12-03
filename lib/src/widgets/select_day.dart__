@@ -1,0 +1,33 @@
+import 'package:flutter/material.dart';
+import 'package:schedule/constants.dart';
+
+class SelectDay extends StatefulWidget {
+  const SelectDay({Key? key}) : super(key: key);
+
+  @override
+  _SelectDayState createState() => _SelectDayState();
+}
+
+class _SelectDayState extends State<SelectDay> {
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: days.length,
+        itemBuilder: (BuildContext context, int index) {
+          final day = days[index];
+          return ListTile(
+            leading: Icon(Icons.circle,
+                color: Theme.of(context).colorScheme.primary),
+            title: Text(day),
+            onTap: () {
+              print("Selected day $day");
+              Navigator.of(context).pop();
+            },
+            // contentPadding: EdgeInsets.zero,
+          );
+        },
+      ),
+    );
+  }
+}
