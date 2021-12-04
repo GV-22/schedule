@@ -24,6 +24,7 @@ class SubjectIem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      contentPadding: const EdgeInsets.only(right: 0, left: 16),
       onTap: () => _handler(),
       leading: Icon(Icons.circle, color: _subject.color),
       title: Text(_subject.label),
@@ -33,7 +34,7 @@ class SubjectIem extends StatelessWidget {
 
   PopupMenuButton<ItemAction> _buildPopupMenu(BuildContext context) {
     return PopupMenuButton(
-      padding: EdgeInsets.zero,
+      padding: EdgeInsets.zero,  
       itemBuilder: (context) {
         return [
           if (!_subject.archived)

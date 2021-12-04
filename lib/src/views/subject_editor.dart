@@ -22,6 +22,8 @@ class _SubjectEditorState extends State<SubjectEditor> {
   final _formState = GlobalKey<FormState>();
   final TextEditingController _labelInputController = TextEditingController();
   Color _pickedColor = const Color(0xFF42244A);
+  bool _addMode = false;
+  bool _initialized = false;
 
   @override
   void dispose() {
@@ -33,10 +35,7 @@ class _SubjectEditorState extends State<SubjectEditor> {
   Widget build(BuildContext context) {
     final SubjectEntity? _subject =
         ModalRoute.of(context)!.settings.arguments as SubjectEntity?;
-    final bool _addMode = _subject == null;
-    _labelInputController.text =
-        _subject == null ? _labelInputController.text : _subject.label;
-    // _pickedColor = stringRGBToColor(_subject)
+    if (!_initialized) initData(_subject);
 
     return Scaffold(
       appBar: AppBar(
@@ -102,14 +101,21 @@ class _SubjectEditorState extends State<SubjectEditor> {
     );
   }
 
+  void initData(SubjectEntity? subject) {
+    if (subject == null) return;
+
+    _addMode = true;
+    _labelInputController.text = subject.label;
+    _pickedColor = subject.color;
+    _initialized = true;
+  }
+
   Future<void> _hideBanner() async {
     await appSharedPreferences.setShowSubjectEditorBanner(-1);
     setState(() {});
   }
 
   void _changeColor(Color color) {
-    // _pickedColor = color;
-    //print("Selected color :$color :: _pickedColor ${_pickedColor.value}");
     Navigator.of(context).pop();
     setState(() => _pickedColor = color);
   }
@@ -139,31 +145,15 @@ class _SubjectEditorState extends State<SubjectEditor> {
   }
 
   Future<void> _save(BuildContext context, SubjectEntity? subject) async {
-    final dataProvider = Provider.of<DataProvider>(context, listen: false);
-    final provided = _labelInputController.text.trim();
-    final _tmp = dataProvider.getSubjectEntityByName(provided);
-
-    if (_tmp != null) {
-      UiUtils.customAltertDialog(
-        context,
-        "Note",
-        "The subject $provided already exists.",
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Ok"),
-          )
-        ],
-      );
-      return;
-    }
-
     final isValidate = _formState.currentState?.validate();
     if (isValidate == null || !isValidate) return;
-
     _formState.currentState?.save();
+
+    final dataProvider = Provider.of<DataProvider>(context, listen: false);
+    final subjectLabel = _labelInputController.text.trim();
+
     try {
-      final String capitalized = toCapitalize(_labelInputController.text);
+      final String capitalized = toCapitalize(subjectLabel);
       if (subject != null) {
         await dataProvider.updateSubject(
           SubjectEntity(
@@ -178,25 +168,44 @@ class _SubjectEditorState extends State<SubjectEditor> {
           "The subject has been successfully updated.",
         );
       } else {
-        await dataProvider.insertSubject(
-          SubjectToAddEntity(label: capitalized, color: _pickedColor),
-        );
-
-        if (appSharedPreferences.showSubjectEditorBanner == 0) {
-          await appSharedPreferences.setShowSubjectEditorBanner(1);
-          setState(() {});
-        }
-
-        UiUtils.customSnackBar(
-          context,
-          "The subject $capitalized has been successfully added.",
-        );
-        setState(() => _pickedColor = const Color(0xFF42244A));
+        _insert(capitalized, dataProvider);
       }
     } catch (e) {
       printLog(
         message: "[DATABASE] error while saving _selectedSubject data $e",
       );
     }
+  }
+
+  Future<void> _insert(String label, DataProvider dataProvider) async {
+    final _tmp = dataProvider.getSubjectEntityByName(label);
+
+    if (_tmp != null) {
+      UiUtils.customAltertDialog(
+        context,
+        "Note",
+        "The subject $label already exists.",
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Ok"),
+          )
+        ],
+      );
+      return;
+    }
+    await dataProvider.insertSubject(
+      SubjectToAddEntity(label: label, color: _pickedColor),
+    );
+
+    if (appSharedPreferences.showSubjectEditorBanner == 0) {
+      await appSharedPreferences.setShowSubjectEditorBanner(1);
+      setState(() {});
+    }
+
+    UiUtils.customSnackBar(
+      context,
+      "The subject $label has been successfully added.",
+    );
   }
 }

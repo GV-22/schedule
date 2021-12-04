@@ -29,6 +29,7 @@ class _TaskEditorState extends State<TaskEditor> {
   SubjectEntity? _subject;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
+  bool _initialized = false;
 
   final _formState = GlobalKey<FormState>();
   final _descriptionInputController = TextEditingController();
@@ -52,7 +53,9 @@ class _TaskEditorState extends State<TaskEditor> {
 
   @override
   Widget build(BuildContext context) {
-    _initData(ModalRoute.of(context)?.settings.arguments as int?);
+    if (!_initialized) {
+      _initData(ModalRoute.of(context)?.settings.arguments as int?);
+    }
     const double size = 20;
 
     return Scaffold(
@@ -165,21 +168,20 @@ class _TaskEditorState extends State<TaskEditor> {
     _addMode = false;
     _task = Provider.of<DataProvider>(context).getTaskEntity(taskId);
 
-    if (_task != null) {
-      _subjectInputController.text = _task!.subject.label;
-      _descriptionInputController.text = _task?.description ?? "";
-      _dayInputController.text = _task!.dayCode;
-      _startTimeInputController.text =
-          "Start ${timeOfDayToString(_task!.startTime)}";
-      _endTimeInputController.text = "End ${timeOfDayToString(_task!.endTime)}";
+    if (_task == null) return;
 
-      _subject = _task!.subject;
-      _endTime = _task!.endTime;
-      _startTime = _task!.startTime;
-    }
+    _subjectInputController.text = _task!.subject.label;
+    _descriptionInputController.text = _task?.description ?? "";
+    _dayInputController.text = toCapitalize(_task!.dayCode);
+    _startTimeInputController.text =
+        "Start ${timeOfDayToString(_task!.startTime)}";
+    _endTimeInputController.text = "End ${timeOfDayToString(_task!.endTime)}";
+
+    _subject = _task!.subject;
+    _endTime = _task!.endTime;
+    _startTime = _task!.startTime;
+    _initialized = true;
   }
-
-  
 
   bool _isCorrectTimeRange(TimeOfDay startTime, TimeOfDay endTime) {
     return toDouble(startTime) < toDouble(endTime);
@@ -219,7 +221,7 @@ class _TaskEditorState extends State<TaskEditor> {
             description: desc.isEmpty ? null : desc,
             startTime: _startTime!,
             endTime: _endTime!,
-            dayCode: _dayInputController.text,
+            dayCode: _dayInputController.text.toLowerCase(),
             archived: _task!.archived,
           ),
         );
@@ -232,7 +234,7 @@ class _TaskEditorState extends State<TaskEditor> {
             description: desc.isEmpty ? null : desc,
             startTime: _startTime!,
             endTime: _endTime!,
-            dayCode: _dayInputController.text,
+            dayCode: _dayInputController.text.toLowerCase(),
           ),
         );
         UiUtils.customSnackBar(
@@ -451,13 +453,13 @@ class _TaskEditorState extends State<TaskEditor> {
       child: ListView.builder(
         itemCount: days.length,
         itemBuilder: (BuildContext context, int index) {
-          final day = days[index];
+          final day = toCapitalize(days[index]);
           return ListTile(
             leading: Icon(
               Icons.circle,
               color: Theme.of(context).colorScheme.primary,
             ),
-            title: Text(toCapitalize(day)),
+            title: Text(day),
             onTap: () {
               _dayInputController.text = day;
               Navigator.of(context).pop();

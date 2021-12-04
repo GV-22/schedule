@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_week_schedule/helpers/utils.dart';
 import '../../db/entities/task.dart';
 import '../../helpers/converter_helpers.dart';
 import '../views/task_editor.dart';
@@ -65,7 +66,7 @@ class TaskItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(task.dayCode, style: ftStyle),
+            Text(toCapitalize(task.dayCode), style: ftStyle),
             const SizedBox(height: 5),
             RichText(
               text: TextSpan(
