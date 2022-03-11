@@ -8,8 +8,8 @@ late SubjectQueries subjectQueries;
 late TaskQueries taskQueries;
 late AppSharedPreferences appSharedPreferences;
 
-Future<void> initialiseContext() async {
-  final db = await initialiseDatabase(dbName);
+Future<void> initContext() async {
+  final db = await initDatabase(dbName);
   subjectQueries = SubjectQueries(db);
   taskQueries = TaskQueries(db);
   appSharedPreferences = AppSharedPreferences();

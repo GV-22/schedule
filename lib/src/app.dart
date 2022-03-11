@@ -26,6 +26,8 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           restorationScopeId: 'app',
           title: "My Week Schedule",
+          themeMode: ThemeMode.light,
+          debugShowCheckedModeBanner: false,
 
           // Provide the generated AppLocalizations to the MaterialApp. This
           // allows descendant Widgets to display the correct translations
@@ -55,9 +57,9 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             colorScheme: ColorScheme.light(
               primary: const Color(0xFF42244A),
-              primaryVariant: const Color(0xFF8F659A),
+              primaryContainer: const Color(0xFF8F659A),
               secondary: const Color(0xFFEF8767),
-              secondaryVariant: const Color(0xFFEF8767).withOpacity(0.5),
+              secondaryContainer: const Color(0xFFEF8767).withOpacity(0.5),
             ),
             fontFamily: "Poppins",
             primarySwatch: createMaterialColor(const Color(0xFF42244A)),

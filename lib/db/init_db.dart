@@ -1,6 +1,5 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqlite_api.dart';
 
 const String _ddl = '''
 drop table if exists s_task;
@@ -27,7 +26,7 @@ create table s_task (
 
 ''';
 
-Future<Database> initialiseDatabase(String dbName) async {
+Future<Database> initDatabase(String dbName) async {
   // await deleteDatabase(join(await getDatabasesPath(), dbName));
   return await openDatabase(
     join(await getDatabasesPath(), dbName),

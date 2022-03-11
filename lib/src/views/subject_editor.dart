@@ -22,7 +22,7 @@ class _SubjectEditorState extends State<SubjectEditor> {
   final _formState = GlobalKey<FormState>();
   final TextEditingController _labelInputController = TextEditingController();
   Color _pickedColor = const Color(0xFF42244A);
-  bool _addMode = false;
+  bool _addMode = true;
   bool _initialized = false;
 
   @override
@@ -104,7 +104,7 @@ class _SubjectEditorState extends State<SubjectEditor> {
   void initData(SubjectEntity? subject) {
     if (subject == null) return;
 
-    _addMode = true;
+    _addMode = false;
     _labelInputController.text = subject.label;
     _pickedColor = subject.color;
     _initialized = true;

@@ -10,7 +10,7 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  await initialiseContext();
+  await initContext();
 
   runApp(const MyApp());
 }
